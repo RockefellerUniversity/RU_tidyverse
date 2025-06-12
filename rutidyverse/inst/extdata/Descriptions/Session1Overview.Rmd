@@ -1,0 +1,12 @@
+<br>
+
+#### **Tidyverse , Session 1**
+
+In this session we will breakdown the core aspects of the tidyverse ecosystem including:
+
+* What is tidy?
+* Tibble data frames
+* Filtering, selecting, merging
+* Purrr for functional programming
+* Pattern recognition with stringr
+* Factors with forcats

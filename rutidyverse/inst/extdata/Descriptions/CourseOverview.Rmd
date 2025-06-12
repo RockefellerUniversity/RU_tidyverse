@@ -1,0 +1,26 @@
+## Course Overview
+<br>
+
+### Course Integrity
+**This course is compiled automatically on _`r Sys.Date()`_ **
+<br>
+[![compilation-check](https://github.com/RockefellerUniversity/RU_tidyverse/actions/workflows/compilation-check.yml/badge.svg)](https://github.com/RockefellerUniversity/RU_tidyverse/actions/workflows/compilation-check.yml)
+
+
+
+**The course is tested and available on MacOS, Windows and Ubuntu Linux for `r R.Version()$version.string`**
+<br>
+[![OS-check](https://github.com/RockefellerUniversity/RU_tidyverse/actions/workflows/OS-check.yaml/badge.svg)](https://github.com/RockefellerUniversity/RU_tidyverse/actions/workflows/OS-check.yaml)
+
+<br>
+<br>
+
+### Overview
+
+This course introduces tidyverse ecosystem of packages. Tidy packages allow for more readable code, more robust evaluation and a high-level of interoperability. 
+
+The course is presented as HTML presentations or single page document. Exercises and answer sheets are included after all subsections to practice techniques and provide future reference examples.
+
+Course material and exercises are available to view as rendered HTML at https://rockefelleruniversity.github.io/RU_tidyverse/.
+All material is available to download under GPL v2 license.
+

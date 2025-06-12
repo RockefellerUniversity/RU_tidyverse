@@ -1,0 +1,8 @@
+Description:
+  CourseName: Tidyverse
+  OverviewRmd: CourseOverview.Rmd
+Presentations:
+    titles: Session1
+    PresRmd: tidyR.Rmd
+    PresOverviewRmd: Session1Overview.Rmd
+    Exercises: EX1_RU_tidyverse_dplyr_select_and_filter.Rmd
