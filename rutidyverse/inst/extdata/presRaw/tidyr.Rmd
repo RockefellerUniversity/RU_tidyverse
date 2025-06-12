@@ -1,17 +1,20 @@
 ---
-title: "Data wrangling with tidy <html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>"
-author: "Rockefeller University, Bioinformatics Resource Centre"
-date: "https://rockefelleruniversity.github.io/RU_tidyverse/"
+title: "Data Wrangling with Tidy"
+subtitle: " <html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html> Bioinformatics Resource Center - Rockefeller University"
+author: 
+  - "http://rockefelleruniversity.github.io/RU_tidyverse/"
+  - "brc@rockefeller.edu"
 output: 
   xaringan::moon_reader:
-    css: ["default", "metropolisCustom.css", "metropolis-fontsCustom.css"]
+    css: ["default.css", "metropolisCustom.css", "metropolis-fontsCustom.css"]
     lib_dir: libs
     nature:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
+      titleSlideClass: [middle, inverse]
   html_document:
-    toc: true # table of contents true
+    toc: true # table of content true
     toc_float: yes
     depth: 3  # upto three depths of headings (specified by #, ## and ###)
     number_sections: false  ## if you want number sections at each table header
@@ -22,10 +25,9 @@ params:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-AsSlides <- TRUE
+knitr::opts_chunk$set(echo = TRUE, tidy = T)
 library(org.Hs.eg.db)
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 ```
 
 # Data wrangling with Tidy
@@ -81,11 +83,6 @@ You can read their <a href="https://cran.r-project.org/web/packages/tidyverse/vi
 Other tools have now been made for the tidy community. This community also overlaps with bioconductor. But the packages above are the linchpins that hold it together. 
 
 ---
-## What are we doing today
-
-Workflow Image for working with data.
-
----
 ## What we won't be doing today
 
 We already have a course online for plotting, including ggplot.     
@@ -96,7 +93,6 @@ https://rockefelleruniversity.github.io/Plotting_In_R/
 # Lets get tidy!
 First step lets load in the data we are using today
 ```{r}
-cat(getwd())
 load(file='dataset/my_tidy.Rdata')
 ```
 
@@ -400,7 +396,7 @@ df1 %>%
 ## You can pipe straight to plots - (pt1)
 ```{r, warning=F, message=F}
 
-p <- mutate(df1,size=if_else(length_mm>200, 'big_fish', 'small_fish')) %>% 
+p <- df1 %>% mutate(size=if_else(length_mm>200, 'big_fish', 'small_fish')) %>% 
   group_by(common_name, size) %>% 
   summarize(IGF1_ng_ml_ave=mean(IGF1_ng_ml, na.rm=T)) %>% 
   filter(common_name != 'Coho salmon')  %>% 
@@ -409,6 +405,7 @@ p <- mutate(df1,size=if_else(length_mm>200, 'big_fish', 'small_fish')) %>%
   geom_bar(stat = "identity", position = "dodge") + 
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_brewer(palette = "Paired")
+
 ```
 ---
 ## You can pipe straight to plots - (pt2)
@@ -547,7 +544,7 @@ __We will make our own tibble now from scratch, using some metadata that will be
 ```{r, eval=F, echo=T, purl=F}
 # Lets load in some packages
 library(org.Hs.eg.db)
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 
 # Lets use the ENTREZ ID as a key
 keys <- untidy_counts$ENTREZ
@@ -556,17 +553,17 @@ keys <- untidy_counts$ENTREZ
 symbols <- select(org.Hs.eg.db, keys = keys,columns = "SYMBOL", keytype = "ENTREZID")
 
 # We can use the ENTREZ ID to look up the chormosome the gene resides on
-chrs <- select(TxDb.Hsapiens.UCSC.hg19.knownGene, keys = keys, columns = "TXCHROM", keytype = "GENEID")
+chrs <- select(TxDb.Hsapiens.UCSC.hg38.knownGene, keys = keys, columns = "TXCHROM", keytype = "GENEID")
 
 # We can use the ENTREZ ID to get a list of genes with grange of their exons
-geneExons <- exonsBy(TxDb.Hsapiens.UCSC.hg19.knownGene,by = "gene")[keys]
+geneExons <- exonsBy(TxDb.Hsapiens.UCSC.hg38.knownGene,by = "gene")[keys]
 
 ```
 
 ```{r, warning=FALSE, message=FALSE, cache=T, eval=T, echo=F}
 # Lets load in some packages
 library(org.Hs.eg.db)
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 
 # Lets use the ENTREZ ID as a key
 keys <- untidy_counts$ENTREZ
@@ -575,10 +572,10 @@ keys <- untidy_counts$ENTREZ
 symbols <- AnnotationDbi::select(org.Hs.eg.db, keys = keys,columns = "SYMBOL", keytype = "ENTREZID")
 
 # We can use the ENTREZ ID to look up the chormosome the gene resides on
-chrs <- AnnotationDbi::select(TxDb.Hsapiens.UCSC.hg19.knownGene, keys = keys, columns = "TXCHROM", keytype = "GENEID")
+chrs <- AnnotationDbi::select(TxDb.Hsapiens.UCSC.hg38.knownGene, keys = keys, columns = "TXCHROM", keytype = "GENEID")
 
 # We can use the ENTREZ ID to get a list of genes with grange of their exons
-geneExons <- exonsBy(TxDb.Hsapiens.UCSC.hg19.knownGene,by = "gene")[keys]
+geneExons <- exonsBy(TxDb.Hsapiens.UCSC.hg38.knownGene,by = "gene")[keys]
 
 ```
 ---
@@ -1052,7 +1049,7 @@ str_pad(brc2, width=10, side='left')
 ```
 
 ---
-## stringr::str_to_* - Capitalization - (pt1)
+## stringr::str\_to\_* - Capitalization - (pt1)
 ```{r}
 # Lets reuse our counts tibble. pull from dplyr can be used to grab a tibble 
 # column and make it into a vector
@@ -1068,7 +1065,7 @@ tidy_counts_expressed_norm %>%
   head()
 ```
 ---
-## stringr::str_to_* - Capitalization - (pt2)
+## stringr::str\_to\_* - Capitalization - (pt2)
 ```{r}
 # String manipulation functions can be used on tibbles using mutate. Here we convert
 # gene symbols to title style capitalization
@@ -1076,7 +1073,7 @@ tidy_counts_expressed_norm %>%
   mutate(SYMBOL = str_to_title(SYMBOL))
 ```
 ---
-## stringr::str_to_* - Capitalization - (pt3)
+## stringr::str\_to\_* - Capitalization - (pt3)
 ```{r}
 # Here we convert chromosome annotation to capitals
 tidy_counts_expressed_norm %>% 
@@ -1093,7 +1090,7 @@ df1 %>%
   str_detect('salmon')
 ```
 ---
-## stringr::detect - give me only patterns
+## stringr::subset - give me only patterns
 ```{r}
 # Subset returns the match if the pattern 'salmon' is present in vector
 df1 %>% 
@@ -1142,14 +1139,14 @@ df1 %>%
 ---
 ## CHALLENGE: Time for an exercise!
 
-Exercise reviewing purrr can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/exercises/EX9_RU_tidyverse_purrr.html)
+Exercise reviewing purrr can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/exercises/EX9_RU_tidyverse_stringr.html)
 
 ---
 ### Answers to exercise.
 
-Answers can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX9_ANSWERS_RU_tidyverse_purrr.html)
+Answers can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX9_ANSWERS_RU_tidyverse_stringr.html)
 
-R code for solutions can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX9_ANSWERS_RU_tidyverse_purrr.R)
+R code for solutions can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX9_ANSWERS_RU_tidyverse_stringr.R)
 
 ---
 # forcats - Handling factors
@@ -1370,6 +1367,8 @@ There is a lot of support for all things tidy at: https://www.tidyverse.org/
 
 plyranges: dplyr equivalent for working with ranges i.e. Granges
 
+profileplyr: graphical and heatmap outputs for genomics
+
 readxl: This package is very useful when you want to import Excel sheets in R
 
 googledrive: Interact with your googledrive through R
@@ -1391,10 +1390,10 @@ https://rockefelleruniversity.github.io/Plotting_In_R/
 R for Data Science text book  
 https://r4ds.had.co.nz/
 
-Data Science with R text book
+Data Science with R text book   
 http://garrettgman.github.io/
 
-Cancer Research UK - Intermediate R course
+Biounformatics Shared Training - Intermediate R course   
 https://bioinformatics-core-shared-training.github.io/r-intermediate/
 
 
