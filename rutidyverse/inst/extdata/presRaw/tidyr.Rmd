@@ -541,7 +541,7 @@ as.data.frame(untidy_counts_base) %>% head(n=12)
 ---
 ## Tibbles: Make your own - (pt1)
 __We will make our own tibble now from scratch, using some metadata that will be useful later__
-```{r, eval=F, echo=T, purl=F}
+```{r, eval=F, echo=T}
 # Lets load in some packages
 library(org.Hs.eg.db)
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
@@ -571,13 +571,14 @@ keys <- untidy_counts$ENTREZ
 # We can use the ENTREZ ID to look up Gene Symbol
 symbols <- AnnotationDbi::select(org.Hs.eg.db, keys = keys,columns = "SYMBOL", keytype = "ENTREZID")
 
-# We can use the ENTREZ ID to look up the chormosome the gene resides on
+# We can use the ENTREZ ID to look up the chromosome the gene resides on
 chrs <- AnnotationDbi::select(TxDb.Hsapiens.UCSC.hg38.knownGene, keys = keys, columns = "TXCHROM", keytype = "GENEID")
 
 # We can use the ENTREZ ID to get a list of genes with grange of their exons
 geneExons <- exonsBy(TxDb.Hsapiens.UCSC.hg38.knownGene,by = "gene")[keys]
 
 ```
+
 ---
 ## Tibbles: Make your own - (pt2)
 ```{r, echo=T,eval=F, purl=F}
@@ -593,6 +594,7 @@ txsLength <- sapply(geneExons, function(x){ x %>%
 # Finally we have all this metadata. Lets put it together into a tibble. 
 counts_metadata <- tibble(ID = symbols$ENTREZID, SYMBOL = symbols$SYMBOL, CHR = chrs$TXCHROM, LENGTH = txsLength)
 ```
+
 ```{r, eval=T, echo=F}
 txsLength <- sapply(geneExons, function(x){ x %>%
     GenomicRanges::reduce() %>%
@@ -729,6 +731,7 @@ __separate__
 tidier_counts <- separate(tidier_counts, Sample, sep = "_", into=c("CellType","Rep"), remove=TRUE)
 tidier_counts
 ```
+
 ---
 ## tidyr::unite
 ```{r}
@@ -748,16 +751,19 @@ tidy_counts
 ---
 # Joining
 Data frames can be joined on a shared variable _a.k.a._ a key. We want this key to be unique i.e. ENTREZ ID. 
+
 ---
 ## dplyr::inner_join - Merging dataframes
 ```{r}
 tidy_counts
 ```
+
 ---
 ## dplyr::inner_join - Merging dataframes
 ```{r}
 counts_metadata
 ```
+
 ---
 ## dplyr::inner_join - Merging dataframes
 ```{r}
@@ -797,6 +803,7 @@ expressed_genes
 # and has missing values (unexpressed genes) which are filled with NA
 left_join(tidy_counts, expressed_genes, by = c("ENTREZ" = "ENTREZ"))
 ```
+
 ---
 ## dplyr::right_join
 ```{r}
@@ -845,11 +852,11 @@ R code for solutions can be found [here](http://rockefelleruniversity.github.io/
 ---
 # Readr again: Writing out 
 You've made a lovely new tibble file. Now you need to save it somewhere. 
-```{r}
-#Theres a wide range of writing  options. Can specify the delmiter directly or use a specific function
-write_delim(tidy_counts_expressed_norm, '../expressed_genes_output.csv', delim =',')
+```{R}
+#There's a wide range of writing  options. Can specify the delmiter directly or use a specific function
+write_delim(tidy_counts_expressed, 'dataset/expressed_genes_output.csv', delim =',')
 
-write_csv(tidy_counts_expressed_norm, '../expressed_genes_output.csv')
+write_csv(tidy_counts_expressed, 'dataset/expressed_genes_output.csv')
 ```
 
 A key difference compared to base is that it does not write out row names. Tibbles generally don't have rownames.
@@ -883,6 +890,7 @@ untidy_counts %>%
   dplyr::select(-ENTREZ) %>% 
   map(mean)
 ```
+
 ---
 ## purrr::map - tidy way to iterate - (pt2)
 ```{r}
@@ -892,6 +900,7 @@ untidy_counts %>%
   dplyr::select(-ENTREZ) %>% 
   map_dbl(mean)
 ```
+
 ---
 ## With tidy data - summarize sometimes
 ```{r}
@@ -900,6 +909,7 @@ tidy_counts %>%
   group_by(Sample) %>% 
   summarize(mean_counts = mean(counts))
 ```
+
 ---
 ## With tidy data - the purrr way
 ```{r}
@@ -908,6 +918,7 @@ tidy_counts %>%
   split(.$Sample) %>% 
   map_dbl(~mean(.$counts))
 ```
+
 ---
 ## purrr::pmap for multiple inputs
 ```{r}
@@ -923,11 +934,13 @@ list(untidy_counts$ORTHO_1, untidy_counts$ORTHO_2) %>%
 
 Dataframes can be be simplified by making them more complex.  
 
-Each value within a tibble can contian more abstract information then just numbers and chracters. Instead you can store another tibble, or object.
+Each value within a tibble can contian more abstract information then just numbers and characters. Instead you can store another tibble, or object.
 
 ---
 ## tidyr::nest - (pt1)
 ```{r}
+tidy_counts_expressed_norm <- read_csv("dataset/expressed_genes_output_norm.csv")
+
 # Nest all the data by sample
 tidy_counts_nest <- tidy_counts_expressed_norm %>% 
   group_by(Sample) %>%
@@ -938,12 +951,14 @@ tidy_counts_nest
 
 tidy_counts_nest$data %>% is()
 ```
+
 ---
 ## tidyr::nest - (pt2)
 ```{r}
 # The data is still there, nested within one of the variables
 tidy_counts_nest$data[[1]]
 ```
+
 ---
 ## tidyr::nest and purrr::map
 ```{r}
@@ -956,6 +971,7 @@ tidy_counts_nest
 
 tidy_counts_nest$my_model[[1]]
 ```
+
 ---
 ## broom::tidy - making models legible 
 ```{r}
@@ -1020,7 +1036,7 @@ Many overlapping functions with base for combining, subsetting, converting and f
 
 ```{r}
 
-brc <- c("Tom", "Ji-Dung", "Matt")
+brc <- c("Tom", "Matt", "Doug", "Wei", "Jenelys")
 
 # Extract substrings from a range. Here the 1st to 3rd character
 brc %>% str_sub(1, 3)
@@ -1038,7 +1054,7 @@ brc
 ## stringr::str_trim - stripping whitespace
 
 ```{r}
-brc2 <- c("Tom  ", "  Ji  -Dung", "Matt   ")
+brc2 <- c("Tom  ", "M att", "  Doug", "Wei", "Jen   elys")
 
 # Trim whitespace from strings
 brc2 <- str_trim(brc2)
@@ -1182,6 +1198,7 @@ tidy_counts_expressed_norm %>%
   mutate_at(vars(Sample), as_factor) %>% 
   pull(Sample) %>% head(n=10)
 ```
+
 ---
 ## Making a factor - Controlling levels
 ```{r}
@@ -1268,6 +1285,7 @@ p <- tidy_counts_expressed_norm %>%
   geom_bar(stat = "identity") + 
   theme(axis.text.x = element_text(angle = 90))
 ```
+
 ---
 ## Now our ordering can be fixed 
 ```{r}
@@ -1302,6 +1320,7 @@ df1 %>%
   pull(age_classbylength) %>% 
   fct_count()
 ```
+
 ---
 ## forcats::fct_infreq() - Mask rare factors
 ```{r}
