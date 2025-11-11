@@ -12,6 +12,7 @@ yaml
 ymlthis
 stringr
 magrittr
+generics
 BiocGenerics
 stats4
 S4Vectors
@@ -20,7 +21,7 @@ compileCourses
 Biobase
 AnnotationDbi
 org.Hs.eg.db
-GenomeInfoDb
+Seqinfo
 GenomicRanges
 GenomicFeatures
 TxDb.Hsapiens.UCSC.hg38.knownGene
