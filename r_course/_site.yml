@@ -22,11 +22,8 @@ navbar:
         href: exercises/exercises/EX1_RU_tidyverse_dplyr_select_and_filter_exercise.html
       - text: Solution
         href: exercises/answers/EX1_RU_tidyverse_dplyr_select_and_filter_answers.html
-  right:
   - text: Getting help!
     href: https://github.com//RockefellerUniversity/RU_tidyverse/issues
-  - href: https://twitter.com/Rockefeller_BRC
-    icon: ion-social-twitter
 output:
   html_document:
     toc: yes
